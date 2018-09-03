@@ -107,7 +107,7 @@ public class AddressBook {
 
     private static final String COMMAND_FIND_WORD = "find";
     private static final String COMMAND_FIND_DESC = "Finds all persons whose names contain any of the specified "
-                                        + "keywords (case-sensitive) and displays them as a list with index numbers.";
+                                        + "keywords (non-case-sensitive) and displays them as a list with index numbers.";
     private static final String COMMAND_FIND_PARAMETERS = "KEYWORD [MORE_KEYWORDS]";
     private static final String COMMAND_FIND_EXAMPLE = COMMAND_FIND_WORD + " alice bob charlie";
 
@@ -480,14 +480,19 @@ public class AddressBook {
      * Retrieves all persons in the full model whose names contain some of the specified keywords.
      *
      * @param keywords for searching
-     * @return list of persons in full model with name containing some of the keywords
+     * @return list of persons in full model with name containing some of the keywords (non case-sensitive)
      */
     private static ArrayList<String[]> getPersonsWithNameContainingAnyKeyword(Collection<String> keywords) {
         final ArrayList<String[]> matchedPersons = new ArrayList<>();
         for (String[] person : getAllPersonsInAddressBook()) {
             final Set<String> wordsInName = new HashSet<>(splitByWhitespace(getNameFromPerson(person)));
-            if (!Collections.disjoint(wordsInName, keywords)) {
-                matchedPersons.add(person);
+
+            for (String name: wordsInName){
+                for(String keywordtocompare : keywords){
+                    if (name.equalsIgnoreCase(keywordtocompare)){
+                        matchedPersons.add(person);
+                    }
+                }
             }
         }
         return matchedPersons;
